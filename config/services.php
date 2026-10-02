@@ -44,4 +44,10 @@ return [
         'is_3ds'        => env('MIDTRANS_IS_3DS', true),
     ],
 
+    'tmdb' => [
+        'api_key'   => env('TMDB_API_KEY'),
+        'base_url'  => env('TMDB_BASE_URL', 'https://api.themoviedb.org/3'),
+        'image_url' => env('TMDB_IMAGE_URL', 'https://image.tmdb.org/t/p'),
+    ],
+
 ];

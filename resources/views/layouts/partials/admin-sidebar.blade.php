@@ -45,6 +45,20 @@
             <x-admin-nav-link route="admin.tickets.index" :active="request()->routeIs('admin.tickets.*')" icon="ti-ticket" label="Tiket" />
         </div>
 
+        {{-- Bioskop --}}
+        <div>
+            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-3 mb-2">Bioskop</p>
+            <x-admin-nav-link route="admin.cinema.index" icon="ti-building" label="Kelola Bioskop" :active="request()->routeIs('admin.cinema.*')" />
+            <x-admin-nav-link route="admin.studios.index" icon="ti-door" label="Kelola Studio" :active="request()->routeIs('admin.studios.*')" />
+            <x-admin-nav-link route="admin.movies.index" icon="ti-movie" label="Kelola Film" :active="request()->routeIs('admin.movies.*')" />
+            <x-admin-nav-link route="admin.showtimes.index" icon="ti-calendar" label="Jadwal Tayang"
+                :active="request()->routeIs('admin.showtimes.*')" />
+            <x-admin-nav-link route="admin.monitoring.index" icon="ti-activity" label="Live Monitoring"
+                :active="request()->routeIs('admin.monitoring.*')" />
+            <x-admin-nav-link route="admin.reports.index" icon="ti-chart-bar" label="Laporan Penjualan"
+                :active="request()->routeIs('admin.reports.*')" />
+        </div>
+
         {{-- Transaksi & Finansial --}}
         <div class="mt-5">
             <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-3 mb-2">Keuangan</p>
@@ -52,7 +66,8 @@
                 :badge="$pendingOrders ?? 0" />
             <x-admin-nav-link route="admin.payments.index" :active="request()->routeIs('admin.payments.*')" icon="ti-credit-card" label="Pembayaran"
                 :badge="$pendingPayments ?? 0" badgeColor="yellow" />
-            <x-admin-nav-link route="admin.transactions.index" :active="request()->routeIs('admin.transactions.*')" icon="ti-exchange" label="Transaksi" />
+            <x-admin-nav-link route="admin.transactions.index" :active="request()->routeIs('admin.transactions.*')" icon="ti-exchange"
+                label="Transaksi" />
             <x-admin-nav-link route="admin.refunds.index" :active="request()->routeIs('admin.refunds.*')" icon="ti-refresh" label="Pengembalian Dana"
                 :badge="$pendingRefunds ?? 0" badgeColor="yellow" />
         </div>

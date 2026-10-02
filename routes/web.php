@@ -20,6 +20,12 @@ use App\Http\Controllers\Admin\AboutController as AdminAboutController;
 use App\Http\Controllers\Admin\RefundController as AdminRefundController;
 use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Admin\SearchController as AdminSearchController;
+use App\Http\Controllers\Admin\CinemaController as AdminCinemaController;
+use App\Http\Controllers\Admin\StudioController as AdminStudioController;
+use App\Http\Controllers\Admin\MovieController as AdminMovieController;
+use App\Http\Controllers\Admin\ShowtimeController as AdminShowtimeController;
+use App\Http\Controllers\Admin\MonitoringController as AdminMonitoringController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
 
 // Controller Officer
 use App\Http\Controllers\Officer\AuthController as OfficerAuthController;
@@ -41,6 +47,16 @@ use App\Http\Controllers\User\PageController;
 use App\Http\Controllers\User\AboutController;
 use App\Http\Controllers\User\RefundController;
 use App\Http\Controllers\ProfileController;
+
+// Cinema Controller
+use App\Http\Controllers\Cinema\HomeController as CinemaHomeController;
+use App\Http\Controllers\Cinema\CinemaController as CinemaCinemaController;
+use App\Http\Controllers\Cinema\MovieController as CinemaMovieController;
+use App\Http\Controllers\Cinema\OrderController as CinemaOrderController;
+use App\Http\Controllers\Cinema\SearchController as CinemaSearchController;
+use App\Http\Controllers\Cinema\TicketController as CinemaTicketController;
+use App\Http\Controllers\Cinema\SeatMapController as CinemaSeatMapController;
+use App\Http\Controllers\Cinema\CheckoutController as CinemaCheckoutController;
 
 // Midtrans Webhook
 Route::post('/midtrans/notification', [CheckoutController::class, 'notification'])->name('midtrans.notification');
@@ -71,6 +87,46 @@ Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.s
 
 // About
 Route::get('/tentang-kami', [AboutController::class, 'index'])->name('about.index');
+
+// Cinema
+Route::prefix('cinema')->name('cinema.')->group(function () {
+
+    // Public
+    Route::get('/', [CinemaHomeController::class,   'index'])->name('index');
+    Route::get('/movies', [CinemaMovieController::class,  'index'])->name('movies');
+    Route::get('/movies/{movie:slug}', [CinemaMovieController::class, 'show'])->name('movies.show');
+    Route::get('/coming-soon', [CinemaMovieController::class,  'coming'])->name('coming');
+    Route::get('/cinemas', [CinemaCinemaController::class, 'index'])->name('cinemas');
+    Route::get('/cinemas/{cinema}', [CinemaCinemaController::class, 'show'])->name('cinemas.show');
+    Route::get('/search', CinemaSearchController::class)->name('search');
+
+    Route::post('/notification', [CinemaCheckoutController::class, 'notification'])->name('checkout.notification');
+
+    // Auth required
+    Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/my-tickets', [CinemaTicketController::class, 'index'])->name('my-tickets');
+        Route::get('/my-tickets/{ticket}', [CinemaTicketController::class, 'show'])->name('tickets.show');
+        Route::get('/my-tickets/{ticket}/qr', [CinemaTicketController::class, 'qr'])->name('tickets.qr');
+        Route::get('/my-orders', [CinemaOrderController::class, 'index'])->name('my-orders');
+        Route::get('/my-orders/{order}', [CinemaOrderController::class, 'show'])->name('orders.show');
+        Route::patch('/my-orders/{order}/cancel', [CinemaOrderController::class, 'cancel'])->name('orders.cancel');
+
+        // Seat map
+        Route::get('/showtime/{showtime}/seats', [CinemaSeatMapController::class, 'index'])->name('seat-map');
+
+        // Seat map
+        Route::get('/showtime/{showtime}/seats', [CinemaSeatMapController::class, 'index'])->name('seat-map');
+        Route::post('/showtime/{showtime}/seats/lock', [CinemaSeatMapController::class, 'lock'])->name('seat-map.lock');
+        Route::post('/showtime/{showtime}/seats/release', [CinemaSeatMapController::class, 'release'])->name('seat-map.release');
+        Route::get('/showtime/{showtime}/seats/status', [CinemaSeatMapController::class, 'status'])->name('seat-map.status');
+        Route::post('/showtime/{showtime}/seats/extend', [CinemaSeatMapController::class, 'extend'])->name('seat-map.extend');
+
+        // Checkout
+        Route::get('/showtime/{showtime}/checkout', [CinemaCheckoutController::class, 'index'])->name('checkout');
+        Route::post('/showtime/{showtime}/checkout', [CinemaCheckoutController::class, 'store'])->name('checkout.store');
+        Route::get('/checkout/finish', [CinemaCheckoutController::class, 'finish'])->name('checkout.finish');
+    });
+});
 
 // User Authenticated Routes
 Route::middleware(['auth', 'verified', 'check.expired.order'])->prefix('user')->name('user.')->group(function () {
@@ -191,6 +247,87 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::patch('/read', [AdminNotificationController::class, 'markAsRead'])->name('read');
         Route::delete('/{id}', [AdminNotificationController::class, 'destroy'])->name('destroy');
         Route::delete('/', [AdminNotificationController::class, 'destroyAll'])->name('destroyAll');
+    });
+
+    // Cinema
+    Route::prefix('cinema')->name('cinema.')->group(function () {
+        Route::get('/', [AdminCinemaController::class, 'index'])->name('index');
+        Route::get('/create', [AdminCinemaController::class, 'create'])->name('create');
+        Route::post('/', [AdminCinemaController::class, 'store'])->name('store');
+        Route::get('/{cinema}', [AdminCinemaController::class, 'show'])->name('show');
+        Route::get('/{cinema}/edit', [AdminCinemaController::class, 'edit'])->name('edit');
+        Route::put('/{cinema}', [AdminCinemaController::class, 'update'])->name('update');
+        Route::patch('/{cinema}/toggle', [AdminCinemaController::class, 'toggleActive'])->name('toggle');
+        Route::delete('/{cinema}', [AdminCinemaController::class, 'destroy'])->name('destroy');
+
+        // Studios
+        Route::post('/{cinema}/studios', [AdminCinemaController::class, 'storeStudio'])->name('studios.store');
+        Route::patch('/{cinema}/studios/{studio}/toggle', [AdminCinemaController::class, 'toggleStudio'])->name('studios.toggle');
+        Route::delete('/{cinema}/studios/{studio}', [AdminCinemaController::class, 'destroyStudio'])->name('studios.destroy');
+    });
+
+    // Studios
+    Route::prefix('studios')->name('studios.')->group(function () {
+        Route::get('/', [AdminStudioController::class, 'index'])->name('index');
+        Route::get('/create', [AdminStudioController::class, 'create'])->name('create');
+        Route::post('/', [AdminStudioController::class, 'store'])->name('store');
+        Route::get('/{studio}', [AdminStudioController::class, 'show'])->name('show');
+        Route::get('/{studio}/edit', [AdminStudioController::class, 'edit'])->name('edit');
+        Route::put('/{studio}', [AdminStudioController::class, 'update'])->name('update');
+        Route::patch('/{studio}/toggle', [AdminStudioController::class, 'toggleActive'])->name('toggle');
+        Route::delete('/{studio}', [AdminStudioController::class, 'destroy'])->name('destroy');
+        Route::post('/{studio}/seat', [AdminStudioController::class, 'updateSeat'])->name('seat.update');
+        Route::post('/{studio}/regenerate', [AdminStudioController::class, 'regenerateLayout'])->name('regenerate');
+    });
+
+    // Movies
+    Route::prefix('movies')->name('movies.')->group(function () {
+        Route::get('/', [AdminMovieController::class, 'index'])->name('index');
+        Route::get('/create', [AdminMovieController::class, 'create'])->name('create');
+        Route::post('/', [AdminMovieController::class, 'store'])->name('store');
+        Route::get('/{movie}', [AdminMovieController::class, 'show'])->name('show');
+        Route::get('/{movie}/edit', [AdminMovieController::class, 'edit'])->name('edit');
+        Route::put('/{movie}', [AdminMovieController::class, 'update'])->name('update');
+        Route::patch('/{movie}/featured', [AdminMovieController::class, 'toggleFeatured'])->name('featured');
+        Route::post('/{movie}/sync', [AdminMovieController::class, 'syncFromTmdb'])->name('sync');
+        Route::delete('/{movie}', [AdminMovieController::class, 'destroy'])->name('destroy');
+
+        // TMDb AJAX
+        Route::get('/tmdb/search', [AdminMovieController::class, 'tmdbSearch'])->name('tmdb.search');
+        Route::get('/tmdb/browse', [AdminMovieController::class, 'tmdbBrowse'])->name('tmdb.browse');
+        Route::get('/tmdb/{tmdbId}', [AdminMovieController::class, 'tmdbDetail'])->name('tmdb.detail');
+        Route::post('/tmdb/import', [AdminMovieController::class, 'importFromTmdb'])->name('tmdb.import');
+    });
+
+    // Showtime
+    Route::prefix('showtimes')->name('showtimes.')->group(function () {
+        Route::get('/', [AdminShowtimeController::class, 'index'])->name('index');
+        Route::get('/create', [AdminShowtimeController::class, 'create'])->name('create');
+        Route::post('/', [AdminShowtimeController::class, 'store'])->name('store');
+        Route::post('/bulk', [AdminShowtimeController::class, 'storeBulk'])->name('bulk');
+        Route::get('/{showtime}', [AdminShowtimeController::class, 'show'])->name('show');
+        Route::get('/{showtime}/edit', [AdminShowtimeController::class, 'edit'])->name('edit');
+        Route::put('/{showtime}', [AdminShowtimeController::class, 'update'])->name('update');
+        Route::patch('/{showtime}/status', [AdminShowtimeController::class, 'toggleStatus'])->name('status');
+        Route::delete('/{showtime}', [AdminShowtimeController::class, 'destroy'])->name('destroy');
+
+        // AJAX
+        Route::get('/ajax/studios/{cinema}', [AdminShowtimeController::class, 'getStudios'])->name('ajax.studios');
+        Route::post('/ajax/conflict', [AdminShowtimeController::class, 'checkConflictAjax'])->name('ajax.conflict');
+    });
+
+    // Monitoring
+    Route::prefix('monitoring')->name('monitoring.')->group(function () {
+        Route::get('/', [AdminMonitoringController::class, 'index'])->name('index');
+        Route::get('/realtime', [AdminMonitoringController::class, 'realtime'])->name('realtime');
+        Route::get('/showtime/{showtime}/seats', [AdminMonitoringController::class, 'showtimeSeatMap'])->name('seatmap');
+    });
+
+    // Reports Bioskop
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [AdminReportController::class, 'index'])->name('index');
+        Route::get('/export', [AdminReportController::class, 'export'])->name('export');
+        Route::get('/chart-data', [AdminReportController::class, 'chartData'])->name('chart');
     });
 
     // Global Search

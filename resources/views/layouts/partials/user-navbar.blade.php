@@ -46,6 +46,11 @@
                             @endif
                         </a>
                     @endforeach
+                    <a href="{{ route('cinema.index') }}"
+                        class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all duration-150 {{ request()->routeIs('cinema.*') ? 'bg-gray-100 text-gray-900 font-semibold' : '' }}">
+                        <i class="ti ti-movie text-base"></i>
+                        Bioskop
+                    </a>
                 </nav>
             </div>
 
@@ -188,7 +193,8 @@
                 <div
                     class="flex items-center gap-2 bg-gray-50 border border-gray-200 focus-within:border-gray-400 focus-within:bg-white rounded-xl px-3 h-11">
                     <i class="ti ti-search text-gray-400 text-sm flex-shrink-0"></i>
-                    <input type="text" name="search" autocomplete="off" placeholder="Cari event, konser, seminar..."
+                    <input type="text" name="search" autocomplete="off"
+                        placeholder="Cari event, konser, seminar..."
                         class="bg-transparent border-none outline-none text-sm text-gray-700 placeholder-gray-400 w-full">
                 </div>
             </form>

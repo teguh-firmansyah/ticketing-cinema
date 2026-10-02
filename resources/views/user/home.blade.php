@@ -424,6 +424,119 @@
         </div>
     </section>
 
+    {{-- Cinema Banner --}}
+    <section class="py-14 bg-gray-950 relative overflow-hidden">
+        <div class="absolute inset-0 pointer-events-none">
+            <div class="absolute -top-20 -right-20 w-80 h-80 bg-red-600/5 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-red-600/3 rounded-full blur-3xl"></div>
+            <div class="absolute inset-0 opacity-[0.02]"
+                style="background-image: linear-gradient(rgba(255,255,255,.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.3) 1px, transparent 1px);
+                background-size: 40px 40px;">
+            </div>
+        </div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row items-center gap-10">
+
+                {{-- Left: Text --}}
+                <div class="flex-1 text-center lg:text-left">
+                    <div
+                        class="inline-flex items-center gap-2 bg-red-600/10 border
+                    border-red-500/20 text-red-400 text-xs font-semibold px-4 py-2
+                    rounded-full mb-5">
+                        <i class="ti ti-movie text-sm"></i>
+                        Ada yang baru di {{ setting('app_name') }} — Bioskop Online
+                    </div>
+
+                    <h2 class="text-3xl lg:text-4xl font-black text-white leading-tight mb-4">
+                        Booking Kursi Bioskop<br>
+                        <span class="text-red-500">Langsung Online!</span>
+                    </h2>
+
+                    <p class="text-base text-gray-400 leading-relaxed mb-6 max-w-lg mx-auto lg:mx-0">
+                        Pilih film favorit, tentukan kursi, bayar, dan dapatkan
+                        e-ticket langsung di smartphone. Tidak perlu antri lagi!
+                    </p>
+
+                    <div
+                        class="flex flex-col sm:flex-row items-center gap-3
+                    justify-center lg:justify-start">
+                        <a href="{{ route('cinema.movies') }}"
+                            class="inline-flex items-center gap-2 h-12 px-7 bg-red-600
+                            hover:bg-red-500 text-white font-bold text-sm rounded-xl
+                            transition-all duration-200">
+                            <i class="ti ti-ticket text-base"></i>
+                            Lihat Film Sekarang
+                        </a>
+                        <a href="{{ route('cinema.index') }}"
+                            class="inline-flex items-center gap-2 h-12 px-6
+                            border border-white/10 text-white font-medium text-sm
+                            rounded-xl hover:bg-white/5 transition-all duration-200">
+                            <i class="ti ti-movie text-base"></i>
+                            Jelajahi Bioskop
+                        </a>
+                    </div>
+
+                    {{-- Feature badges --}}
+                    <div
+                        class="flex flex-wrap items-center gap-2 mt-6
+                    justify-center lg:justify-start">
+                        @foreach ([['icon' => 'ti-armchair', 'label' => 'Pilih Kursi'], ['icon' => 'ti-qrcode', 'label' => 'E-Ticket QR'], ['icon' => 'ti-device-mobile', 'label' => 'Bayar Digital'], ['icon' => 'ti-shield-check', 'label' => 'Aman & Terjamin']] as $feature)
+                            <div
+                                class="flex items-center gap-1.5 bg-white/5 border border-white/10
+                        text-gray-400 text-xs font-medium px-3 py-1.5 rounded-full">
+                                <i class="ti {{ $feature['icon'] }} text-red-500 text-sm"></i>
+                                {{ $feature['label'] }}
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Right: Film Posters Preview --}}
+                <div class="flex-shrink-0">
+                    <div class="relative flex items-end gap-3">
+                        @php
+                            $previewMovies = \App\Models\Movie::where('status', 'now_showing')
+                                ->whereNotNull('poster')
+                                ->take(3)
+                                ->get();
+                        @endphp
+
+                        @foreach ($previewMovies as $i => $previewMovie)
+                            <div
+                                class="relative transition-transform duration-300
+                        hover:-translate-y-2
+                        {{ $i === 1 ? '-translate-y-4' : '' }}">
+                                <div
+                                    class="w-32 rounded-2xl overflow-hidden shadow-2xl
+                            border-2 border-white/10">
+                                    <img src="{{ $previewMovie->poster_url }}"
+                                        class="w-full aspect-[2/3] object-cover" alt="{{ $previewMovie->title }}">
+                                </div>
+                                @if ($i === 1)
+                                    <div
+                                        class="absolute -top-3 -right-3 bg-red-600 text-white
+                            text-[10px] font-black px-2 py-0.5 rounded-full
+                            shadow-lg shadow-red-500/30">
+                                        HOT
+                                    </div>
+                                @endif
+                            </div>
+                        @endforeach
+
+                        {{-- Glow effect --}}
+                        <div
+                            class="absolute inset-0 bg-red-600/10 blur-3xl rounded-full
+                        -z-10 scale-150">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     {{-- Blog terbaru --}}
     @if ($latestBlogs->count() > 0)
         <section class="py-14 bg-gray-50">

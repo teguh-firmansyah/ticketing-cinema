@@ -38,13 +38,21 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
+            // Core
             SettingSeeder::class,
             PageSeeder::class,
             AboutSectionSeeder::class,
+
+            // Event ticketing
             CategorySeeder::class,
             EventSeeder::class,
             BlogSeeder::class,
             FaqSeeder::class,
+
+            // Cinema
+            CinemaSeeder::class,
+            MovieSeeder::class,
+            ShowtimeSeeder::class,
         ]);
     }
 }
